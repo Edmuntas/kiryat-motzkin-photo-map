@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>קריית מוצקין — אתרי צילום</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{ --blue:#0073ea; --green:#00a854; --orange:#f79009; --waze:#33ccff; --dark:#1f2a37; --me:#9b51e0; --done:#e6007e; --edit:#f59f00; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;background:#f6f7fb}
+  #app{display:flex;flex-direction:column;height:100vh}
+  header{background:var(--dark);color:#fff;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:600}
+  header .count{background:var(--blue);border-radius:20px;padding:2px 10px;font-size:13px}
+  header .done-count{background:var(--done);border-radius:20px;padding:2px 10px;font-size:13px}
+  .editbtn{background:#36404d;color:#fff;border:1px solid #4b5563;border-radius:8px;padding:4px 10px;font-size:12.5px;cursor:pointer}
+  .editbtn.on{background:var(--edit);color:#1f2a37;border-color:var(--edit);font-weight:700}
+  .legend{display:flex;gap:13px;font-size:12px;align-items:center;margin-inline-start:auto;flex-wrap:wrap}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:4px;vertical-align:middle}
+  #editbar{display:none;background:var(--edit);color:#1f2a37;font-size:12.5px;font-weight:600;padding:5px 14px}
+  #editbar.on{display:block}
+  #main{flex:1;display:flex;min-height:0}
+  #list{width:370px;overflow-y:auto;background:#fff;border-inline-start:1px solid #e3e6ec}
+  #map{flex:1}
+  .item{padding:10px 14px;border-bottom:1px solid #eef0f4;cursor:pointer;border-inline-start:4px solid transparent}
+  .item:hover{background:#f0f6ff}.item.active{background:#e1efff}
+  .item.done{background:#fff0f7;border-inline-start-color:var(--done)}
+  .item.done .name{text-decoration:line-through;text-decoration-color:var(--done)}
+  .item .top{display:flex;align-items:center;gap:8px}
+  .badge{color:#fff;min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
+  .b-address{background:var(--blue)}.b-parcel{background:var(--green)}.b-approx{background:var(--orange)}.b-street{background:var(--orange)}
+  .item.done .badge{background:var(--done)!important}
+  .item .name{font-weight:600;color:var(--dark);font-size:14.5px;flex:1}
+  .chk{transform:scale(1.35);accent-color:var(--done);cursor:pointer;flex:none}
+  .item .meta{color:#475467;font-size:12.5px;margin:3px 0 2px 32px;line-height:1.55}
+  .gh{background:#eef2ff;color:#3538cd;border-radius:5px;padding:1px 6px;font-weight:600;font-size:11.5px}
+  .tag{border-radius:5px;padding:1px 6px;font-size:11px;font-weight:600}
+  .tag.web{background:#e7f8ef;color:#027a48}.tag.src{background:#eef2f6;color:#475467}.tag.warn{background:#fff4e5;color:#b54708}
+  .tag.donep{background:var(--done);color:#fff}.tag.moved{background:#fff3bf;color:#915b00}
+  .note{color:#667085;font-size:11.5px;margin:4px 0 2px 32px;line-height:1.5}
+  .row-btns{margin:7px 0 1px 32px;display:flex;gap:7px;flex-wrap:wrap}
+  .waze-btn{display:inline-flex;align-items:center;gap:5px;background:var(--waze);color:#063;font-weight:700;text-decoration:none;border-radius:8px;padding:5px 11px;font-size:12.5px}
+  .mini{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #d0d5dd;color:#475467;border-radius:8px;padding:5px 9px;font-size:12px;cursor:pointer}
+  .leaflet-popup-content{margin:10px 12px;direction:rtl;text-align:right;min-width:205px}
+  .pop-name{font-weight:700;font-size:15px;color:var(--dark)}
+  .pop-line{color:#475467;font-size:12.5px;margin:4px 0}
+  .pop-waze{display:inline-flex;gap:6px;background:var(--waze);color:#063;font-weight:700;text-decoration:none;border-radius:8px;padding:6px 12px;font-size:13px;margin-top:4px}
+  .pop-done{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 9px;border-radius:8px;background:#fbe9f3;cursor:pointer;font-weight:700;color:var(--done);font-size:13px;user-select:none}
+  .pop-done input{transform:scale(1.4);accent-color:var(--done);cursor:pointer}
+  .num-icon{color:#fff;border:2px solid #fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.45);position:relative}
+  .num-icon .v{position:absolute;top:-6px;inset-inline-end:-6px;background:#fff;color:var(--done);border-radius:50%;width:15px;height:15px;font-size:11px;display:flex;align-items:center;justify-content:center;border:1px solid var(--done)}
+  .num-icon.editing{box-shadow:0 0 0 3px var(--edit),0 1px 6px rgba(0,0,0,.5)}
+  .pc-icon{width:16px;height:16px;border-radius:50%;background:rgba(0,168,84,.25);border:2px solid var(--green)}
+  #search{padding:5px 10px;border-radius:6px;border:none;font-size:13px;width:120px}
+  .toggles{display:flex;gap:9px;font-size:12px;color:#fff;align-items:center}
+  .toggles label{display:flex;gap:4px;align-items:center;cursor:pointer}
+  .locbtn{background:#fff;width:34px;height:34px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;border:none}
+  .locbtn.active{background:var(--me);color:#fff}
+  @media(max-width:760px){#main{flex-direction:column}#list{width:100%;height:45%;border-top:1px solid #e3e6ec;order:2}#map{order:1;height:55%}.legend{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>📷 קריית מוצקין</h1>
+    <span class="count" id="count"></span>
+    <span class="done-count" id="doneCount"></span>
+    <input id="search" placeholder="חיפוש...">
+    <button class="editbtn" id="editBtn" title="גרירת נקודות למיקום הנכון">✎ ערוך מיקומים</button>
+    <div class="toggles"><label><input type="checkbox" id="tgParc"> חלקות</label><label><input type="checkbox" id="tgHideDone"> הסתר שבוצעו</label></div>
+    <div class="legend">
+      <span><i style="background:#0073ea"></i>כתובת</span>
+      <span><i style="background:#00a854"></i>גוש/חלקה</span>
+      <span><i style="background:#f79009"></i>מקורב</span>
+      <span><i style="background:#e6007e"></i>בוצע</span>
+      <span><i style="background:#9b51e0"></i>אני</span>
+    </div>
+  </header>
+  <div id="editbar"><b>מצב עריכה פעיל:</b> גרור כל נקודה (מסומנת בכתום) אל המבנה הנכון על האורתופוטו. המיקום נשמר אוטומטית. לחיצה על «✎» שוב לסיום.</div>
+  <div id="main"><div id="list"></div><div id="map"></div></div>
+</div>
+<script>
+const SITES=[{"n": 1, "name": "היכל התיאטרון", "addr": "החשמונאים 77", "g": 10426, "h": 68, "blat": 32.844453, "blon": 35.079817, "src": "address", "plat": 32.844624, "plon": 35.085072, "pexact": false, "web": true, "note": "כתובת מאומתת באינטרנט (אתר ההיכל)", "dist": 491}, {"n": 2, "name": "מבנה מחלקת התברואה", "addr": "החשמונאים 81", "g": 10426, "h": 64, "blat": 32.8423019, "blon": 35.0777738, "src": "approx", "plat": 32.849267, "plon": 35.084189, "pexact": false, "web": false, "note": "מס׳ בית 81 לא נמצא במאגר GovMap — מיקום מקורב על רחוב החשמונאים", "dist": 979}, {"n": 3, "name": "מתחם גני קציר (יקינטון + ממלכתי)", "addr": "אפרים קציר 2", "g": 10423, "h": 100, "blat": 32.854836, "blon": 35.089132, "src": "parcel", "plat": 32.854836, "plon": 35.089132, "pexact": true, "web": false, "note": "הרחוב 'אפרים קציר' לא קיים במאגר GovMap בקריית מוצקין — המיקום לפי גוש/חלקה 10423/100 (מאומת)", "dist": 0}, {"n": 4, "name": "גן ניומן", "addr": "שפרינצק 13", "g": 10428, "h": 493, "blat": 32.836566, "blon": 35.077718, "src": "address", "plat": 32.8368, "plon": 35.078003, "pexact": true, "web": false, "note": "כתובת + חלקה תואמות (~30 מ׳)", "dist": 37}, {"n": 5, "name": "גני ילדים ויצו", "addr": "קדיש לוז 55", "g": 10426, "h": 278, "blat": 32.845354, "blon": 35.089183, "src": "address", "plat": 32.845654, "plon": 35.089337, "pexact": true, "web": true, "note": "מאומת: מעון ויצו, קדיש לוז 55. כתובת+חלקה תואמות", "dist": 36}, {"n": 6, "name": "מעון המתנ\"ס - נווה קסם", "addr": "יצחק בן צבי 6", "g": 10423, "h": 176, "blat": 32.853931, "blon": 35.089646, "src": "address", "plat": 32.854041, "plon": 35.089403, "pexact": true, "web": true, "note": "מאומת: מעון נווה קסם, יצחק בן צבי 6", "dist": 26}, {"n": 7, "name": "גן קשת ואור", "addr": "דקר 66", "g": 10426, "h": 537, "blat": 32.845891, "blon": 35.088964, "src": "parcel", "plat": 32.845891, "plon": 35.088964, "pexact": true, "web": false, "note": "דקר 66 לא נמצא ב-GovMap (הרחוב מגיע עד ~20) — מיקום לפי גוש/חלקה 10426/537 (מאומת). לבדוק מספר בית", "dist": 0}, {"n": 8, "name": "חטיבת ביניים אורט (רבין)", "addr": "דקר 11", "g": 10426, "h": 539, "blat": 32.843045, "blon": 35.084376, "src": "address", "plat": 32.84272, "plon": 35.083821, "pexact": true, "web": true, "note": "מאומת: חט\"ב ע\"ש יצחק רבין אורט, דקר 11", "dist": 63}, {"n": 9, "name": "גן הדר ונופר", "addr": "ש\"י עגנון 11", "g": 10423, "h": 293, "blat": 32.853136, "blon": 35.085558, "src": "parcel", "plat": 32.853136, "plon": 35.085558, "pexact": true, "web": false, "note": "ש\"י עגנון 11 לא נמצא ב-GovMap — מיקום לפי חלקה. שים לב: אותה חלקה (10423/293) כמו מתנ\"ס צביקה פיק", "dist": 0}, {"n": 10, "name": "מקלט מס' 8 - מרכז הורות", "addr": "יקותיאל אדם 58 (מקלט מס׳ 8)", "g": 11562, "h": 109, "blat": 32.82525, "blon": 35.0769, "src": "approx", "plat": 32.827037, "plon": 35.075319, "pexact": true, "web": true, "note": "לפי רשימת המקלטים הרשמית של עיריית קריית מוצקין: מקלט ציבורי מס׳ 8, תת-קרקעי, רח׳ יקותיאל אדם 58, שכונת יגאל אלון (בלוח רשום 'קק\"ל' — כנראה שגוי). הרחוב חדש ואינו מופיע בגאוקודרים, לכן המיקום מקורב באזור השכונה — גרור את הנקודה למבנה המדויק.", "dist": 0}, {"n": 11, "name": "מרכז הטניס", "addr": "החשמונאים 35", "g": 10428, "h": 510, "blat": 32.839764, "blon": 35.076696, "src": "address", "plat": 32.840109, "plon": 35.075894, "pexact": true, "web": true, "note": "באינטרנט: חשמונאים 35 (בלוח: 38). כתובת+חלקה תואמות (~90 מ׳)", "dist": 84}, {"n": 12, "name": "מחסן נילי", "addr": "הרב עוזיאל", "g": 10428, "h": 220, "blat": 32.835054, "blon": 35.073688, "src": "parcel", "plat": 32.835054, "plon": 35.073688, "pexact": true, "web": false, "note": "מיקום לפי גוש/חלקה 10428/220 (מאומת) ברחוב הרב עוזיאל", "dist": 0}, {"n": 13, "name": "גן צופים", "addr": "הברוש 12", "g": 10421, "h": 288, "blat": 32.85769, "blon": 35.089821, "src": "parcel", "plat": 32.85769, "plon": 35.089821, "pexact": true, "web": false, "note": "הברוש 12 לא נמצא במדויק (GovMap הראה 15) — מיקום לפי גוש/חלקה 10421/288 (מאומת)", "dist": 0}, {"n": 14, "name": "מתחם הברוש", "addr": "הברוש 3", "g": 10421, "h": 34, "blat": 32.855681, "blon": 35.090544, "src": "address", "plat": 32.850308, "plon": 35.092898, "pexact": false, "web": false, "note": "כתובת מאומתת ב-GovMap (הברוש 3). החלקה 10421/34 לא אומתה — פער ~650 מ׳, כדאי לבדוק", "dist": 637}, {"n": 15, "name": "מתנ\"ס צביקה פיק - משכנות האומנים", "addr": "לאה גולדברג 1", "g": 10423, "h": 293, "blat": 32.85321, "blon": 35.085967, "src": "address", "plat": 32.853136, "plon": 35.085558, "pexact": true, "web": true, "note": "מאומת: מרכז קהילתי משכנות האמנים, לאה גולדברג. כתובת+חלקה תואמות", "dist": 39}, {"n": 16, "name": "אולם ספורט + חטיבת ביניים (אילן רמון / נבון)", "addr": "ש\"י עגנון 4", "g": 10426, "h": 652, "blat": 32.848829, "blon": 35.083871, "src": "address", "plat": 32.849435, "plon": 35.082862, "pexact": true, "web": true, "note": "מאומת: ביה\"ס נבון + חט\"ב רמון, ש\"י עגנון 3-4. כתובת+חלקה תואמות", "dist": 116}, {"n": 17, "name": "מחסני העירייה", "addr": "החשמונאים 37", "g": 10428, "h": 510, "blat": 32.840645, "blon": 35.077388, "src": "address", "plat": 32.840109, "plon": 35.075894, "pexact": true, "web": false, "note": "כתובת מאומתת ב-GovMap. אותה חלקה (10428/510) כמו מרכז הטניס", "dist": 152}, {"n": 18, "name": "מתנ\"ס בן גוריון", "addr": "שדרות בן גוריון 76", "g": 10430, "h": 51, "blat": 32.838283, "blon": 35.0831638, "src": "approx", "plat": 32.838231, "plon": 35.083873, "pexact": false, "web": true, "note": "כתובת מאומתת באינטרנט (דפי זהב/מתנ\"ס): שד' בן גוריון 76. מיקום מקורב", "dist": 67}, {"n": 19, "name": "גני נחליאלי ושטייר", "addr": "ברק", "g": 11562, "h": 11, "blat": 32.828004, "blon": 35.076239, "src": "parcel", "plat": 32.828004, "plon": 35.076239, "pexact": true, "web": false, "note": "מיקום לפי גוש/חלקה 11562/11 (מאומת) ברחוב ברק", "dist": 0}];
+const wz=(la,lo)=>"https://waze.com/ul?ll="+la+","+lo+"&navigate=yes";
+const srcLabel={address:"כתובת מדויקת (GovMap)",parcel:"לפי גוש/חלקה",street:"מרכז רחוב",approx:"מקורב"};
+
+// ---- persistent state ----
+let DONE={},POS={};
+try{DONE=JSON.parse(localStorage.getItem('km_done')||'{}')||{};}catch(e){}
+try{POS=JSON.parse(localStorage.getItem('km_pos')||'{}')||{};}catch(e){}
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const isDone=n=>!!DONE[n];
+const hasCustom=n=>Array.isArray(POS[n]);
+const eff=s=> hasCustom(s.n)?{lat:POS[s.n][0],lon:POS[s.n][1]}:{lat:s.blat,lon:s.blon};
+
+let editMode=false;
+
+const map=L.map('map',{zoomControl:true}).setView([32.842,35.082],14);
+const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
+const gHybrid=L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'}).addTo(map);
+const gSat=L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'});
+L.control.layers({'גוגל אורתופוטו + שמות':gHybrid,'גוגל אורתופוטו':gSat,'מפת רחובות':osm},null,{position:'topleft'}).addTo(map);
+
+const siteLayer=L.layerGroup().addTo(map);
+const parcLayer=L.layerGroup(), linkLayer=L.layerGroup();
+const sMark={},items={};
+
+function baseColor(s){return s.src==='address'?'#0073ea':(s.src==='approx'||s.src==='street'?'#f79009':'#00a854');}
+function makeIcon(s){
+  const done=isDone(s.n);
+  const col=done?'#e6007e':baseColor(s);
+  const check=done?'<span class="v">✓</span>':'';
+  return L.divIcon({className:'',html:'<div class="num-icon'+(editMode?' editing':'')+'" style="background:'+col+'">'+s.n+check+'</div>',iconSize:[26,26],iconAnchor:[13,13]});
+}
+function popupHtml(s){
+  const d=isDone(s.n),p=eff(s);
+  return '<div class="pop-name">'+s.n+'. '+s.name+'</div>'+
+    '<div class="pop-line">📍 '+s.addr+', קרית מוצקין'+(s.web?' ✅':'')+(hasCustom(s.n)?' <span class="tag moved">מיקום הותאם ידנית</span>':'')+'</div>'+
+    '<div class="pop-line">🗺️ גוש '+s.g+' / חלקה '+s.h+(s.pexact?'':' (לא אומת)')+'</div>'+
+    '<div class="pop-line">מקור מיקום: '+(hasCustom(s.n)?'התאמה ידנית':srcLabel[s.src])+'</div>'+
+    '<div class="pop-line" style="color:#667085">'+s.note+'</div>'+
+    '<a class="pop-waze" href="'+wz(p.lat,p.lon)+'" target="_blank">🧭 ניווט ב‑Waze</a>'+
+    '<label class="pop-done"><input type="checkbox" onchange="toggleDone('+s.n+',this.checked)" '+(d?'checked':'')+'> סמן שבוצע ✓</label>';
+}
+
+const bounds=[];
+SITES.forEach(s=>{
+  const p=eff(s);
+  const m=L.marker([p.lat,p.lon],{icon:makeIcon(s),draggable:false}).addTo(siteLayer);
+  m.bindPopup(()=>popupHtml(s));
+  m.on('click',()=>{if(!editMode)highlight(s.n);});
+  m.on('dragend',()=>{const ll=m.getLatLng();POS[s.n]=[+ll.lat.toFixed(6),+ll.lng.toFixed(6)];save('km_pos',POS);render(document.getElementById('search').value);});
+  sMark[s.n]=m; bounds.push([p.lat,p.lon]);
+  const pIcon=L.divIcon({className:'',html:'<div class="pc-icon"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+  L.marker([s.plat,s.plon],{icon:pIcon}).addTo(parcLayer)
+    .bindPopup('<div class="pop-line"><b>חלקה</b> '+s.g+'/'+s.h+(s.pexact?' (מאומת)':' (לא אומת)')+'<br>'+s.name+'</div>');
+});
+map.fitBounds(bounds,{padding:[40,40]});
+
+document.getElementById('tgParc').addEventListener('change',e=>{
+  if(e.target.checked){map.addLayer(parcLayer);}else{map.removeLayer(parcLayer);}
+});
+document.getElementById('tgHideDone').addEventListener('change',()=>render(document.getElementById('search').value));
+
+// ---- edit mode ----
+document.getElementById('editBtn').addEventListener('click',()=>{
+  editMode=!editMode;
+  document.getElementById('editBtn').classList.toggle('on',editMode);
+  document.getElementById('editbar').classList.toggle('on',editMode);
+  SITES.forEach(s=>{const m=sMark[s.n];if(editMode)m.dragging.enable();else m.dragging.disable();m.setIcon(makeIcon(s));});
+});
+function resetPos(n){delete POS[n];save('km_pos',POS);const s=SITES.find(x=>x.n===n);sMark[n].setLatLng([s.blat,s.blon]);render(document.getElementById('search').value);}
+window.resetPos=resetPos;
+
+// ---- done ----
+function toggleDone(n,val){if(val)DONE[n]=true;else delete DONE[n];save('km_done',DONE);
+  sMark[n].setIcon(makeIcon(SITES.find(x=>x.n===n)));render(document.getElementById('search').value);updateDoneCount();}
+window.toggleDone=toggleDone;
+function updateDoneCount(){document.getElementById('doneCount').textContent='בוצעו '+SITES.filter(s=>isDone(s.n)).length+'/'+SITES.length;}
+
+// ---- my location ----
+let meMarker=null,meCircle=null,watching=false;
+const LocCtl=L.Control.extend({options:{position:'topleft'},
+  onAdd:function(){const b=L.DomUtil.create('button','locbtn');b.id='locbtn';b.innerHTML='📍';b.title='הצג את המיקום שלי';
+    L.DomEvent.on(b,'click',function(ev){L.DomEvent.stop(ev);toggleLoc();});return b;}});
+map.addControl(new LocCtl());
+function toggleLoc(){const btn=document.getElementById('locbtn');
+  if(!watching){watching=true;btn.classList.add('active');map.locate({watch:true,enableHighAccuracy:true,setView:true,maxZoom:17});}
+  else{watching=false;btn.classList.remove('active');map.stopLocate();if(meMarker){map.removeLayer(meMarker);meMarker=null;}if(meCircle){map.removeLayer(meCircle);meCircle=null;}}}
+map.on('locationfound',e=>{const r=e.accuracy/2;
+  if(!meMarker){meMarker=L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:2,fillColor:'#9b51e0',fillOpacity:1}).addTo(map).bindPopup('אתה כאן');
+    meCircle=L.circle(e.latlng,{radius:r,color:'#9b51e0',weight:1,fillColor:'#9b51e0',fillOpacity:.12}).addTo(map);}
+  else{meMarker.setLatLng(e.latlng);meCircle.setLatLng(e.latlng).setRadius(r);}});
+map.on('locationerror',e=>{alert('לא ניתן לאתר מיקום: '+e.message+'\n(צריך לאשר הרשאת מיקום בדפדפן)');
+  watching=false;document.getElementById('locbtn').classList.remove('active');});
+
+// ---- list ----
+const list=document.getElementById('list');
+function render(f=''){
+  list.innerHTML='';f=(f||'').trim();let shown=0;
+  const hideDone=document.getElementById('tgHideDone').checked;
+  SITES.forEach(s=>{
+    if(hideDone&&isDone(s.n))return;
+    if(f&&!(s.name.includes(f)||s.addr.includes(f)||String(s.g).includes(f)||String(s.h).includes(f)))return;
+    shown++;
+    const done=isDone(s.n),p=eff(s);
+    const bc=s.src==='address'?'b-address':(s.src==='approx'||s.src==='street'?'b-approx':'b-parcel');
+    const div=document.createElement('div');div.className='item'+(done?' done':'');div.id='item-'+s.n;
+    div.innerHTML='<div class="top"><span class="badge '+bc+'">'+s.n+'</span><span class="name">'+s.name+'</span>'+
+        '<input type="checkbox" class="chk" '+(done?'checked':'')+' title="סמן שבוצע"></div>'+
+      '<div class="meta">📍 '+s.addr+', קרית מוצקין '+(s.web?'<span class="tag web">אומת</span>':'')+
+        (hasCustom(s.n)?' <span class="tag moved">מיקום ידני ✎</span>':'')+(done?' <span class="tag donep">בוצע ✓</span>':'')+'</div>'+
+      '<div class="meta"><span class="gh">גוש '+s.g+' / חלקה '+s.h+'</span> '+
+        '<span class="tag '+(s.src==='approx'||s.src==='street'?'warn':'src')+'">'+(hasCustom(s.n)?'התאמה ידנית':srcLabel[s.src])+'</span></div>'+
+      '<div class="note">'+s.note+'</div>'+
+      '<div class="row-btns"><a class="waze-btn" href="'+wz(p.lat,p.lon)+'" target="_blank" onclick="event.stopPropagation()">🧭 Waze</a>'+
+        (hasCustom(s.n)?'<span class="mini" onclick="event.stopPropagation();resetPos('+s.n+')">↺ אפס מיקום</span>':'')+'</div>';
+    const chk=div.querySelector('.chk');
+    chk.addEventListener('click',ev=>{ev.stopPropagation();toggleDone(s.n,chk.checked);});
+    div.onclick=()=>{const pp=eff(s);map.setView([pp.lat,pp.lon],17);sMark[s.n].openPopup();highlight(s.n);};
+    list.appendChild(div);items[s.n]=div;
+  });
+  document.getElementById('count').textContent=shown+' אתרים';
+}
+function highlight(n){document.querySelectorAll('.item').forEach(e=>e.classList.remove('active'));const el=items[n];if(el){el.classList.add('active');el.scrollIntoView({block:'nearest',behavior:'smooth'});}}
+document.getElementById('search').addEventListener('input',e=>render(e.target.value));
+render();updateDoneCount();
+</script>
+</body>
+</html>
