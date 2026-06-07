@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>קריית מוצקין — אתרי צילום</title>
+<title>עבודות 08.06.2026 — אתרי צילום</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -64,7 +64,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>📷 קריית מוצקין</h1>
+    <h1>📷 עבודות 08.06.2026</h1>
     <span class="count" id="count"></span>
     <span class="done-count" id="doneCount"></span>
     <input id="search" placeholder="חיפוש...">
@@ -82,11 +82,11 @@
   <div id="main"><div id="list"></div><div id="map"></div></div>
 </div>
 <script>
-const SITES=[{"n": 1, "name": "היכל התיאטרון", "addr": "החשמונאים 77", "g": 10426, "h": 68, "blat": 32.844453, "blon": 35.079817, "src": "address", "plat": 32.844624, "plon": 35.085072, "pexact": false, "web": true, "note": "כתובת מאומתת באינטרנט (אתר ההיכל)", "dist": 491}, {"n": 2, "name": "מבנה מחלקת התברואה", "addr": "החשמונאים 81", "g": 10426, "h": 64, "blat": 32.8423019, "blon": 35.0777738, "src": "approx", "plat": 32.849267, "plon": 35.084189, "pexact": false, "web": false, "note": "מס׳ בית 81 לא נמצא במאגר GovMap — מיקום מקורב על רחוב החשמונאים", "dist": 979}, {"n": 3, "name": "מתחם גני קציר (יקינטון + ממלכתי)", "addr": "אפרים קציר 2", "g": 10423, "h": 100, "blat": 32.854836, "blon": 35.089132, "src": "parcel", "plat": 32.854836, "plon": 35.089132, "pexact": true, "web": false, "note": "הרחוב 'אפרים קציר' לא קיים במאגר GovMap בקריית מוצקין — המיקום לפי גוש/חלקה 10423/100 (מאומת)", "dist": 0}, {"n": 4, "name": "גן ניומן", "addr": "שפרינצק 13", "g": 10428, "h": 493, "blat": 32.836566, "blon": 35.077718, "src": "address", "plat": 32.8368, "plon": 35.078003, "pexact": true, "web": false, "note": "כתובת + חלקה תואמות (~30 מ׳)", "dist": 37}, {"n": 5, "name": "גני ילדים ויצו", "addr": "קדיש לוז 55", "g": 10426, "h": 278, "blat": 32.845354, "blon": 35.089183, "src": "address", "plat": 32.845654, "plon": 35.089337, "pexact": true, "web": true, "note": "מאומת: מעון ויצו, קדיש לוז 55. כתובת+חלקה תואמות", "dist": 36}, {"n": 6, "name": "מעון המתנ\"ס - נווה קסם", "addr": "יצחק בן צבי 6", "g": 10423, "h": 176, "blat": 32.853931, "blon": 35.089646, "src": "address", "plat": 32.854041, "plon": 35.089403, "pexact": true, "web": true, "note": "מאומת: מעון נווה קסם, יצחק בן צבי 6", "dist": 26}, {"n": 7, "name": "גן קשת ואור", "addr": "דקר 66", "g": 10426, "h": 537, "blat": 32.845891, "blon": 35.088964, "src": "parcel", "plat": 32.845891, "plon": 35.088964, "pexact": true, "web": false, "note": "דקר 66 לא נמצא ב-GovMap (הרחוב מגיע עד ~20) — מיקום לפי גוש/חלקה 10426/537 (מאומת). לבדוק מספר בית", "dist": 0}, {"n": 8, "name": "חטיבת ביניים אורט (רבין)", "addr": "דקר 11", "g": 10426, "h": 539, "blat": 32.843045, "blon": 35.084376, "src": "address", "plat": 32.84272, "plon": 35.083821, "pexact": true, "web": true, "note": "מאומת: חט\"ב ע\"ש יצחק רבין אורט, דקר 11", "dist": 63}, {"n": 9, "name": "גן הדר ונופר", "addr": "ש\"י עגנון 11", "g": 10423, "h": 293, "blat": 32.853136, "blon": 35.085558, "src": "parcel", "plat": 32.853136, "plon": 35.085558, "pexact": true, "web": false, "note": "ש\"י עגנון 11 לא נמצא ב-GovMap — מיקום לפי חלקה. שים לב: אותה חלקה (10423/293) כמו מתנ\"ס צביקה פיק", "dist": 0}, {"n": 10, "name": "מקלט מס' 8 - מרכז הורות", "addr": "יקותיאל אדם 58 (מקלט מס׳ 8)", "g": 11562, "h": 109, "blat": 32.82525, "blon": 35.0769, "src": "approx", "plat": 32.827037, "plon": 35.075319, "pexact": true, "web": true, "note": "לפי רשימת המקלטים הרשמית של עיריית קריית מוצקין: מקלט ציבורי מס׳ 8, תת-קרקעי, רח׳ יקותיאל אדם 58, שכונת יגאל אלון (בלוח רשום 'קק\"ל' — כנראה שגוי). הרחוב חדש ואינו מופיע בגאוקודרים, לכן המיקום מקורב באזור השכונה — גרור את הנקודה למבנה המדויק.", "dist": 0}, {"n": 11, "name": "מרכז הטניס", "addr": "החשמונאים 35", "g": 10428, "h": 510, "blat": 32.839764, "blon": 35.076696, "src": "address", "plat": 32.840109, "plon": 35.075894, "pexact": true, "web": true, "note": "באינטרנט: חשמונאים 35 (בלוח: 38). כתובת+חלקה תואמות (~90 מ׳)", "dist": 84}, {"n": 12, "name": "מחסן נילי", "addr": "הרב עוזיאל", "g": 10428, "h": 220, "blat": 32.835054, "blon": 35.073688, "src": "parcel", "plat": 32.835054, "plon": 35.073688, "pexact": true, "web": false, "note": "מיקום לפי גוש/חלקה 10428/220 (מאומת) ברחוב הרב עוזיאל", "dist": 0}, {"n": 13, "name": "גן צופים", "addr": "הברוש 12", "g": 10421, "h": 288, "blat": 32.85769, "blon": 35.089821, "src": "parcel", "plat": 32.85769, "plon": 35.089821, "pexact": true, "web": false, "note": "הברוש 12 לא נמצא במדויק (GovMap הראה 15) — מיקום לפי גוש/חלקה 10421/288 (מאומת)", "dist": 0}, {"n": 14, "name": "מתחם הברוש", "addr": "הברוש 3", "g": 10421, "h": 34, "blat": 32.855681, "blon": 35.090544, "src": "address", "plat": 32.850308, "plon": 35.092898, "pexact": false, "web": false, "note": "כתובת מאומתת ב-GovMap (הברוש 3). החלקה 10421/34 לא אומתה — פער ~650 מ׳, כדאי לבדוק", "dist": 637}, {"n": 15, "name": "מתנ\"ס צביקה פיק - משכנות האומנים", "addr": "לאה גולדברג 1", "g": 10423, "h": 293, "blat": 32.85321, "blon": 35.085967, "src": "address", "plat": 32.853136, "plon": 35.085558, "pexact": true, "web": true, "note": "מאומת: מרכז קהילתי משכנות האמנים, לאה גולדברג. כתובת+חלקה תואמות", "dist": 39}, {"n": 16, "name": "אולם ספורט + חטיבת ביניים (אילן רמון / נבון)", "addr": "ש\"י עגנון 4", "g": 10426, "h": 652, "blat": 32.848829, "blon": 35.083871, "src": "address", "plat": 32.849435, "plon": 35.082862, "pexact": true, "web": true, "note": "מאומת: ביה\"ס נבון + חט\"ב רמון, ש\"י עגנון 3-4. כתובת+חלקה תואמות", "dist": 116}, {"n": 17, "name": "מחסני העירייה", "addr": "החשמונאים 37", "g": 10428, "h": 510, "blat": 32.840645, "blon": 35.077388, "src": "address", "plat": 32.840109, "plon": 35.075894, "pexact": true, "web": false, "note": "כתובת מאומתת ב-GovMap. אותה חלקה (10428/510) כמו מרכז הטניס", "dist": 152}, {"n": 18, "name": "מתנ\"ס בן גוריון", "addr": "שדרות בן גוריון 76", "g": 10430, "h": 51, "blat": 32.838283, "blon": 35.0831638, "src": "approx", "plat": 32.838231, "plon": 35.083873, "pexact": false, "web": true, "note": "כתובת מאומתת באינטרנט (דפי זהב/מתנ\"ס): שד' בן גוריון 76. מיקום מקורב", "dist": 67}, {"n": 19, "name": "גני נחליאלי ושטייר", "addr": "ברק", "g": 11562, "h": 11, "blat": 32.828004, "blon": 35.076239, "src": "parcel", "plat": 32.828004, "plon": 35.076239, "pexact": true, "web": false, "note": "מיקום לפי גוש/חלקה 11562/11 (מאומת) ברחוב ברק", "dist": 0}];
+const SITES=[{"name": "סלמה", "addr": "סלמה", "blat": 32.896186, "blon": 35.359548, "src": "approx", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.896186, "plon": 35.359548, "n": 1, "dist": 0}, {"name": "קריית הממשלה נוף הגליל", "addr": "דרך קריית הממשלה, נוף הגליל", "blat": 32.700603, "blon": 35.309919, "src": "address", "g": "", "h": "", "note": "חנן 972506506664", "pexact": false, "web": false, "plat": 32.700603, "plon": 35.309919, "n": 2, "dist": 0}, {"name": "דרך יפו - תל אביב", "addr": "דרך יפו, תל אביב", "blat": 32.060552, "blon": 34.770526, "src": "street", "g": "", "h": "", "note": "איש קשר: אריק | סטטוס: נכשל", "pexact": false, "web": false, "plat": 32.060552, "plon": 34.770526, "n": 3, "dist": 0}, {"name": "קניון שער הצפון - קרית אתא", "addr": "קניון שער הצפון, קרית אתא", "blat": 32.807808, "blon": 35.075724, "src": "address", "g": "", "h": "", "note": "דני מנהל התפעול 0505270002", "pexact": false, "web": false, "plat": 32.807808, "plon": 35.075724, "n": 4, "dist": 0}, {"name": "ביה\"ס חנה סנש - אור עקיבא", "addr": "ביה\"ס חנה סנש, אור עקיבא", "blat": 32.500233, "blon": 34.918504, "src": "address", "g": "", "h": "", "note": "השלמה | דין וצמן 0507281536", "pexact": false, "web": false, "plat": 32.500233, "plon": 34.918504, "n": 5, "dist": 0}, {"name": "חמי טבריה", "addr": "חמי טבריה", "blat": 32.768315, "blon": 35.549702, "src": "address", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.768315, "plon": 35.549702, "n": 6, "dist": 0}, {"name": "אדירים - מודד", "addr": "אדירים", "blat": 32.557486, "blon": 35.280764, "src": "address", "g": "", "h": "", "note": "דני גרלב 97258409162 | אם דני לא זמין - ארז עמר", "pexact": false, "web": false, "plat": 32.557486, "plon": 35.280764, "n": 7, "dist": 0}, {"name": "מושב עלמה - מודד", "addr": "מושב עלמה", "blat": 33.051862, "blon": 35.499945, "src": "approx", "g": "", "h": "", "note": "גריישה 972505709436 | אם לא זמין - אפשר ל...", "pexact": false, "web": false, "plat": 33.051862, "plon": 35.499945, "n": 8, "dist": 0}, {"name": "נמורה נכסים - קריית שמונה", "addr": "אלי הורוביץ, קריית שמונה", "blat": 33.219853, "blon": 35.589721, "src": "address", "g": "", "h": "", "note": "תומר 972548887559", "pexact": false, "web": false, "plat": 33.219853, "plon": 35.589721, "n": 9, "dist": 0}, {"name": "עראמשה", "addr": "עראמשה", "blat": 33.088703, "blon": 35.225078, "src": "approx", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 33.088703, "plon": 35.225078, "n": 10, "dist": 0}];
 const wz=(la,lo)=>"https://waze.com/ul?ll="+la+","+lo+"&navigate=yes";
+const wzq=(q)=>"https://waze.com/ul?q="+encodeURIComponent(q)+"&navigate=yes";
 const srcLabel={address:"כתובת מדויקת (GovMap)",parcel:"לפי גוש/חלקה",street:"מרכז רחוב",approx:"מקורב"};
 
-// ---- persistent state ----
 let DONE={},POS={};
 try{DONE=JSON.parse(localStorage.getItem('km_done')||'{}')||{};}catch(e){}
 try{POS=JSON.parse(localStorage.getItem('km_pos')||'{}')||{};}catch(e){}
@@ -94,10 +94,9 @@ const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const isDone=n=>!!DONE[n];
 const hasCustom=n=>Array.isArray(POS[n]);
 const eff=s=> hasCustom(s.n)?{lat:POS[s.n][0],lon:POS[s.n][1]}:{lat:s.blat,lon:s.blon};
-
 let editMode=false;
 
-const map=L.map('map',{zoomControl:true}).setView([32.842,35.082],14);
+const map=L.map('map',{zoomControl:true}).setView([SITES[0]?SITES[0].blat:32.84, SITES[0]?SITES[0].blon:35.08],14);
 const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
 const gHybrid=L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'}).addTo(map);
 const gSat=L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'});
@@ -116,11 +115,12 @@ function makeIcon(s){
 }
 function popupHtml(s){
   const d=isDone(s.n),p=eff(s);
+  const gh=(s.g!==''&&s.h!=='')?'<div class="pop-line">🗺️ גוש '+s.g+' / חלקה '+s.h+(s.pexact?'':' (לא אומת)')+'</div>':'';
   return '<div class="pop-name">'+s.n+'. '+s.name+'</div>'+
-    '<div class="pop-line">📍 '+s.addr+', קרית מוצקין'+(s.web?' ✅':'')+(hasCustom(s.n)?' <span class="tag moved">מיקום הותאם ידנית</span>':'')+'</div>'+
-    '<div class="pop-line">🗺️ גוש '+s.g+' / חלקה '+s.h+(s.pexact?'':' (לא אומת)')+'</div>'+
+    '<div class="pop-line">📍 '+s.addr+', עבודות 08.06.2026'+(s.web?' ✅':'')+(hasCustom(s.n)?' <span class="tag moved">מיקום הותאם ידנית</span>':'')+'</div>'+
+    gh+
     '<div class="pop-line">מקור מיקום: '+(hasCustom(s.n)?'התאמה ידנית':srcLabel[s.src])+'</div>'+
-    '<div class="pop-line" style="color:#667085">'+s.note+'</div>'+
+    (s.note?'<div class="pop-line" style="color:#667085">'+s.note+'</div>':'')+
     '<a class="pop-waze" href="'+wz(p.lat,p.lon)+'" target="_blank">🧭 ניווט ב‑Waze</a>'+
     '<label class="pop-done"><input type="checkbox" onchange="toggleDone('+s.n+',this.checked)" '+(d?'checked':'')+'> סמן שבוצע ✓</label>';
 }
@@ -133,18 +133,19 @@ SITES.forEach(s=>{
   m.on('click',()=>{if(!editMode)highlight(s.n);});
   m.on('dragend',()=>{const ll=m.getLatLng();POS[s.n]=[+ll.lat.toFixed(6),+ll.lng.toFixed(6)];save('km_pos',POS);render(document.getElementById('search').value);});
   sMark[s.n]=m; bounds.push([p.lat,p.lon]);
-  const pIcon=L.divIcon({className:'',html:'<div class="pc-icon"></div>',iconSize:[16,16],iconAnchor:[8,8]});
-  L.marker([s.plat,s.plon],{icon:pIcon}).addTo(parcLayer)
-    .bindPopup('<div class="pop-line"><b>חלקה</b> '+s.g+'/'+s.h+(s.pexact?' (מאומת)':' (לא אומת)')+'<br>'+s.name+'</div>');
+  if(s.plat!=null&&s.plon!=null){
+    const pIcon=L.divIcon({className:'',html:'<div class="pc-icon"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+    L.marker([s.plat,s.plon],{icon:pIcon}).addTo(parcLayer)
+      .bindPopup('<div class="pop-line"><b>חלקה</b> '+s.g+'/'+s.h+(s.pexact?' (מאומת)':' (לא אומת)')+'<br>'+s.name+'</div>');
+  }
 });
-map.fitBounds(bounds,{padding:[40,40]});
+if(bounds.length) map.fitBounds(bounds,{padding:[40,40]});
 
 document.getElementById('tgParc').addEventListener('change',e=>{
   if(e.target.checked){map.addLayer(parcLayer);}else{map.removeLayer(parcLayer);}
 });
 document.getElementById('tgHideDone').addEventListener('change',()=>render(document.getElementById('search').value));
 
-// ---- edit mode ----
 document.getElementById('editBtn').addEventListener('click',()=>{
   editMode=!editMode;
   document.getElementById('editBtn').classList.toggle('on',editMode);
@@ -154,13 +155,11 @@ document.getElementById('editBtn').addEventListener('click',()=>{
 function resetPos(n){delete POS[n];save('km_pos',POS);const s=SITES.find(x=>x.n===n);sMark[n].setLatLng([s.blat,s.blon]);render(document.getElementById('search').value);}
 window.resetPos=resetPos;
 
-// ---- done ----
 function toggleDone(n,val){if(val)DONE[n]=true;else delete DONE[n];save('km_done',DONE);
   sMark[n].setIcon(makeIcon(SITES.find(x=>x.n===n)));render(document.getElementById('search').value);updateDoneCount();}
 window.toggleDone=toggleDone;
 function updateDoneCount(){document.getElementById('doneCount').textContent='בוצעו '+SITES.filter(s=>isDone(s.n)).length+'/'+SITES.length;}
 
-// ---- my location ----
 let meMarker=null,meCircle=null,watching=false;
 const LocCtl=L.Control.extend({options:{position:'topleft'},
   onAdd:function(){const b=L.DomUtil.create('button','locbtn');b.id='locbtn';b.innerHTML='📍';b.title='הצג את המיקום שלי';
@@ -176,7 +175,6 @@ map.on('locationfound',e=>{const r=e.accuracy/2;
 map.on('locationerror',e=>{alert('לא ניתן לאתר מיקום: '+e.message+'\n(צריך לאשר הרשאת מיקום בדפדפן)');
   watching=false;document.getElementById('locbtn').classList.remove('active');});
 
-// ---- list ----
 const list=document.getElementById('list');
 function render(f=''){
   list.innerHTML='';f=(f||'').trim();let shown=0;
@@ -187,14 +185,16 @@ function render(f=''){
     shown++;
     const done=isDone(s.n),p=eff(s);
     const bc=s.src==='address'?'b-address':(s.src==='approx'||s.src==='street'?'b-approx':'b-parcel');
+    const ghTxt=(s.g!==''&&s.h!=='')?'<span class="gh">גוש '+s.g+' / חלקה '+s.h+'</span> ':'';
     const div=document.createElement('div');div.className='item'+(done?' done':'');div.id='item-'+s.n;
     div.innerHTML='<div class="top"><span class="badge '+bc+'">'+s.n+'</span><span class="name">'+s.name+'</span>'+
         '<input type="checkbox" class="chk" '+(done?'checked':'')+' title="סמן שבוצע"></div>'+
-      '<div class="meta">📍 '+s.addr+', קרית מוצקין '+(s.web?'<span class="tag web">אומת</span>':'')+
+      '<div class="meta">📍 '+s.addr+', עבודות 08.06.2026 '+(s.web?'<span class="tag web">אומת</span>':'')+
         (hasCustom(s.n)?' <span class="tag moved">מיקום ידני ✎</span>':'')+(done?' <span class="tag donep">בוצע ✓</span>':'')+'</div>'+
-      '<div class="meta"><span class="gh">גוש '+s.g+' / חלקה '+s.h+'</span> '+
-        '<span class="tag '+(s.src==='approx'||s.src==='street'?'warn':'src')+'">'+(hasCustom(s.n)?'התאמה ידנית':srcLabel[s.src])+'</span></div>'+
-      '<div class="note">'+s.note+'</div>'+
+      '<div class="meta">'+ghTxt+
+        '<span class="tag '+(s.src==='approx'||s.src==='street'?'warn':'src')+'">'+(hasCustom(s.n)?'התאמה ידנית':srcLabel[s.src])+'</span>'+
+        (s.dist>150?' <span class="tag warn">Δחלקה '+s.dist+'מ׳</span>':'')+'</div>'+
+      (s.note?'<div class="note">'+s.note+'</div>':'')+
       '<div class="row-btns"><a class="waze-btn" href="'+wz(p.lat,p.lon)+'" target="_blank" onclick="event.stopPropagation()">🧭 Waze</a>'+
         (hasCustom(s.n)?'<span class="mini" onclick="event.stopPropagation();resetPos('+s.n+')">↺ אפס מיקום</span>':'')+'</div>';
     const chk=div.querySelector('.chk');
