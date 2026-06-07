@@ -49,9 +49,10 @@
   .pop-waze{display:inline-flex;gap:6px;background:var(--waze);color:#063;font-weight:700;text-decoration:none;border-radius:8px;padding:6px 12px;font-size:13px;margin-top:4px}
   .pop-done{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 9px;border-radius:8px;background:#fbe9f3;cursor:pointer;font-weight:700;color:var(--done);font-size:13px;user-select:none}
   .pop-done input{transform:scale(1.4);accent-color:var(--done);cursor:pointer}
-  .num-icon{color:#fff;border:2px solid #fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.45);position:relative}
-  .num-icon .v{position:absolute;top:-6px;inset-inline-end:-6px;background:#fff;color:var(--done);border-radius:50%;width:15px;height:15px;font-size:11px;display:flex;align-items:center;justify-content:center;border:1px solid var(--done)}
-  .num-icon.editing{box-shadow:0 0 0 3px var(--edit),0 1px 6px rgba(0,0,0,.5)}
+  .num-icon{color:#fff;border:3px solid #fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.55);position:relative}
+  .num-icon::after{content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #fff;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+  .num-icon .v{position:absolute;top:-7px;inset-inline-end:-7px;background:#fff;color:var(--done);border-radius:50%;width:17px;height:17px;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid var(--done)}
+  .num-icon.editing{box-shadow:0 0 0 3px var(--edit),0 2px 8px rgba(0,0,0,.55)}
   .pc-icon{width:16px;height:16px;border-radius:50%;background:rgba(0,168,84,.25);border:2px solid var(--green)}
   #search{padding:5px 10px;border-radius:6px;border:none;font-size:13px;width:120px}
   .toggles{display:flex;gap:9px;font-size:12px;color:#fff;align-items:center}
@@ -111,7 +112,7 @@ function makeIcon(s){
   const done=isDone(s.n);
   const col=done?'#e6007e':baseColor(s);
   const check=done?'<span class="v">✓</span>':'';
-  return L.divIcon({className:'',html:'<div class="num-icon'+(editMode?' editing':'')+'" style="background:'+col+'">'+s.n+check+'</div>',iconSize:[26,26],iconAnchor:[13,13]});
+  return L.divIcon({className:'',html:'<div class="num-icon'+(editMode?' editing':'')+'" style="background:'+col+'">'+s.n+check+'</div>',iconSize:[36,46],iconAnchor:[18,46]});
 }
 function popupHtml(s){
   const d=isDone(s.n),p=eff(s);
