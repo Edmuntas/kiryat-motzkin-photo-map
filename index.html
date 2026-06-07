@@ -69,7 +69,7 @@
     <span class="done-count" id="doneCount"></span>
     <input id="search" placeholder="חיפוש...">
     <button class="editbtn" id="editBtn" title="גרירת נקודות למיקום הנכון">✎ ערוך מיקומים</button>
-    <div class="toggles"><label><input type="checkbox" id="tgParc"> חלקות</label><label><input type="checkbox" id="tgKml" checked> גבולות KML</label><label><input type="checkbox" id="tgHideDone"> הסתר שבוצעו</label></div>
+    <div class="toggles"><label><input type="checkbox" id="tgParc"> חלקות</label><label><input type="checkbox" id="tgHideDone"> הסתר שבוצעו</label></div>
     <div class="legend">
       <span><i style="background:#0073ea"></i>כתובת</span>
       <span><i style="background:#00a854"></i>גוש/חלקה</span>
@@ -82,16 +82,15 @@
   <div id="main"><div id="list"></div><div id="map"></div></div>
 </div>
 <script>
-const SITES=[{"name": "סלמה", "addr": "סלמה", "blat": 32.896186, "blon": 35.359548, "src": "approx", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.896186, "plon": 35.359548, "n": 1, "dist": 0}, {"name": "קריית הממשלה נוף הגליל", "addr": "דרך קריית הממשלה, נוף הגליל", "blat": 32.700603, "blon": 35.309919, "src": "address", "g": "", "h": "", "note": "חנן 972506506664", "pexact": false, "web": false, "plat": 32.700603, "plon": 35.309919, "n": 2, "dist": 0}, {"name": "דרך יפו - חיפה", "addr": "דרך יפו, חיפה", "blat": 32.8219952, "blon": 34.9944894, "src": "address", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.8219952, "plon": 34.9944894, "n": 3, "dist": 0}, {"name": "קניון שער הצפון - קרית אתא", "addr": "קניון שער הצפון, קרית אתא", "blat": 32.807808, "blon": 35.075724, "src": "address", "g": "", "h": "", "note": "דני מנהל התפעול 0505270002", "pexact": false, "web": false, "plat": 32.807808, "plon": 35.075724, "n": 4, "dist": 0}, {"name": "ביה\"ס חנה סנש - אור עקיבא", "addr": "ביה\"ס חנה סנש, אור עקיבא", "blat": 32.500233, "blon": 34.918504, "src": "address", "g": "", "h": "", "note": "השלמה | דין וצמן 0507281536", "pexact": false, "web": false, "plat": 32.500233, "plon": 34.918504, "n": 5, "dist": 0}, {"name": "חמי טבריה", "addr": "חמי טבריה", "blat": 32.768315, "blon": 35.549702, "src": "address", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.768315, "plon": 35.549702, "n": 6, "dist": 0}, {"name": "אדירים - מודד", "addr": "אדירים", "blat": 32.557486, "blon": 35.280764, "src": "address", "g": "", "h": "", "note": "דני גרלב 97258409162 | אם דני לא זמין - ארז עמר", "pexact": false, "web": false, "plat": 32.557486, "plon": 35.280764, "n": 7, "dist": 0}, {"name": "מושב עלמה - מודד", "addr": "מושב עלמה", "blat": 33.051862, "blon": 35.499945, "src": "approx", "g": "", "h": "", "note": "גריישה 972505709436 | אם לא זמין - אפשר ל...", "pexact": false, "web": false, "plat": 33.051862, "plon": 35.499945, "n": 8, "dist": 0}, {"name": "נמורה נכסים - קריית שמונה", "addr": "אלי הורוביץ, קריית שמונה", "blat": 33.219853, "blon": 35.589721, "src": "address", "g": "", "h": "", "note": "תומר 972548887559", "pexact": false, "web": false, "plat": 33.219853, "plon": 35.589721, "n": 9, "dist": 0}, {"name": "עראמשה", "addr": "עראמשה", "blat": 33.088703, "blon": 35.225078, "src": "approx", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 33.088703, "plon": 35.225078, "n": 10, "dist": 0}];
+const SITES=[{"name": "סלמה", "addr": "סלמה", "blat": 32.896186, "blon": 35.359548, "src": "approx", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.896186, "plon": 35.359548, "n": 1, "dist": 0}, {"name": "חמי טבריה", "addr": "חמי טבריה", "blat": 32.768315, "blon": 35.549702, "src": "address", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.768315, "plon": 35.549702, "n": 2, "dist": 0}, {"name": "דרך יפו - חיפה", "addr": "דרך יפו, חיפה", "blat": 32.8219952, "blon": 34.9944894, "src": "address", "g": "", "h": "", "note": "איש קשר: אריק", "pexact": false, "web": false, "plat": 32.8219952, "plon": 34.9944894, "n": 3, "dist": 0}, {"name": "קריית הממשלה נוף הגליל", "addr": "דרך קריית הממשלה, נוף הגליל", "blat": 32.700603, "blon": 35.309919, "src": "address", "g": "", "h": "", "note": "חנן 972506506664", "pexact": false, "web": false, "plat": 32.700603, "plon": 35.309919, "n": 4, "dist": 0}, {"name": "קניון שער הצפון - קרית אתא", "addr": "קניון שער הצפון, קרית אתא", "blat": 32.807808, "blon": 35.075724, "src": "address", "g": "", "h": "", "note": "דני מנהל התפעול 0505270002", "pexact": false, "web": false, "plat": 32.807808, "plon": 35.075724, "n": 5, "dist": 0}, {"name": "השלמה - ביה\"ס חנה סנש - אור עקיבא", "addr": "ביה\"ס חנה סנש, אור עקיבא", "blat": 32.500233, "blon": 34.918504, "src": "address", "g": "", "h": "", "note": "דין ויצמן 0507281536", "pexact": false, "web": false, "plat": 32.500233, "plon": 34.918504, "n": 6, "dist": 0}, {"name": "אדירים - מודד", "addr": "אדירים", "blat": 32.557486, "blon": 35.280764, "src": "address", "g": "", "h": "", "note": "דני גרלב 972584091162", "pexact": false, "web": false, "plat": 32.557486, "plon": 35.280764, "n": 7, "dist": 0}, {"name": "פורת - מודד", "addr": "פורת", "blat": 32.27103, "blon": 34.951695, "src": "parcel", "g": "8562", "h": "37", "note": "הילה 972500000000", "pexact": false, "web": false, "plat": 32.27103, "plon": 34.951695, "n": 8, "dist": 0}, {"name": "שדה יצחק - מודד", "addr": "שדה יצחק", "blat": 32.406791, "blon": 34.992514, "src": "parcel", "g": "8959", "h": "31", "note": "ענת גושן 972505646575", "pexact": false, "web": false, "plat": 32.406791, "plon": 34.992514, "n": 9, "dist": 0}];
 const wz=(la,lo)=>"https://waze.com/ul?ll="+la+","+lo+"&navigate=yes";
 const wzq=(q)=>"https://waze.com/ul?q="+encodeURIComponent(q)+"&navigate=yes";
 const srcLabel={address:"כתובת מדויקת (GovMap)",parcel:"לפי גוש/חלקה",street:"מרכז רחוב",approx:"מקורב"};
 
-const MAP_DATE='20260608';
 let DONE={},POS={};
-try{DONE=JSON.parse(localStorage.getItem('km_done_'+MAP_DATE)||'{}')||{};}catch(e){}
-try{POS=JSON.parse(localStorage.getItem('km_pos_'+MAP_DATE)||'{}')||{};}catch(e){}
-const save=(k,v)=>{try{localStorage.setItem(k+'_'+MAP_DATE,JSON.stringify(v));}catch(e){}};
+try{DONE=JSON.parse(localStorage.getItem('km_done')||'{}')||{};}catch(e){}
+try{POS=JSON.parse(localStorage.getItem('km_pos')||'{}')||{};}catch(e){}
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const isDone=n=>!!DONE[n];
 const hasCustom=n=>Array.isArray(POS[n]);
 const eff=s=> hasCustom(s.n)?{lat:POS[s.n][0],lon:POS[s.n][1]}:{lat:s.blat,lon:s.blon};
@@ -101,7 +100,7 @@ const map=L.map('map',{zoomControl:true}).setView([SITES[0]?SITES[0].blat:32.84,
 const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
 const gHybrid=L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'}).addTo(map);
 const gSat=L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{maxZoom:21,subdomains:['mt0','mt1','mt2','mt3'],attribution:'© Google'});
-L.control.layers({'גוגל אורתופוטו + שמות':gHybrid,'גוגל אורתופוטו':gSat,'מפת רחובות':osm},null,{position:'topleft'}).addTo(map);
+const layerCtrl=L.control.layers({'גוגל אורתופוטו + שמות':gHybrid,'גוגל אורתופוטו':gSat,'מפת רחובות':osm},null,{position:'topleft'});layerCtrl.addTo(map);
 
 const siteLayer=L.layerGroup().addTo(map);
 const parcLayer=L.layerGroup(), linkLayer=L.layerGroup();
@@ -142,23 +141,8 @@ SITES.forEach(s=>{
 });
 if(bounds.length) map.fitBounds(bounds,{padding:[40,40]});
 
-/* ── KML polygon overlays ── */
-const KML_POLYS=[
-  {name:"סלמה",coords:[[32.897083060131365,35.365526203276794],[32.897082773891334,35.365748197978654],[32.89662927915358,35.36574737584433],[32.89662956538868,35.365525382273646]]},
-  {name:"דרך יפו - חיפה",coords:[[32.82827828591785,34.984328951418895],[32.82832297060726,34.984184471396134],[32.828173018285725,34.984042516056164],[32.827791720931195,34.98536959163916],[32.82763509107006,34.985949605634616],[32.82755199338311,34.98619114544502],[32.82741915699093,34.98653239103431],[32.827294855607846,34.98669363294113],[32.82705047763042,34.98706405327057],[32.82654727523996,34.98772457343639],[32.82668753916798,34.98782482844596],[32.82672848759278,34.987711948626114],[32.826728413272356,34.98766901889097],[32.826863608117954,34.987476500649684],[32.82701770490686,34.98727190252023],[32.82715163056058,34.98708640382806],[32.82735543833993,34.98685886175059],[32.8273897079137,34.986795109643374],[32.82751953537345,34.98651250173503],[32.82762860063306,34.98621269733733],[32.827724607718025,34.985887788458164],[32.82784535789736,34.98551712110976],[32.82794465199509,34.98521298267576],[32.8280728669104,34.984832653891544],[32.828160481574805,34.984561148122964],[32.82821958755158,34.98434821948878]]}
-];
-const kmlLayer=L.layerGroup().addTo(map);
-KML_POLYS.forEach(kp=>{
-  const poly=L.polygon(kp.coords,{color:'#e040fb',weight:2.5,fillColor:'#e040fb',fillOpacity:0.18,dashArray:'6 4'});
-  poly.bindPopup('<b>'+kp.name+'</b><br>📐 גבול אתר (KML)');
-  poly.addTo(kmlLayer);
-});
-
 document.getElementById('tgParc').addEventListener('change',e=>{
   if(e.target.checked){map.addLayer(parcLayer);}else{map.removeLayer(parcLayer);}
-});
-document.getElementById('tgKml').addEventListener('change',e=>{
-  if(e.target.checked){map.addLayer(kmlLayer);}else{map.removeLayer(kmlLayer);}
 });
 document.getElementById('tgHideDone').addEventListener('change',()=>render(document.getElementById('search').value));
 
@@ -223,6 +207,23 @@ function render(f=''){
 function highlight(n){document.querySelectorAll('.item').forEach(e=>e.classList.remove('active'));const el=items[n];if(el){el.classList.add('active');el.scrollIntoView({block:'nearest',behavior:'smooth'});}}
 document.getElementById('search').addEventListener('input',e=>render(e.target.value));
 render();updateDoneCount();
+
+/* ── KML polygon overlays ── */
+const KML_POLYS=[
+{name:"סלמה",coords:[[32.897083,35.365526],[32.897083,35.365748],[32.896629,35.365747],[32.896630,35.365525]]},
+{name:"דרך יפו - חיפה",coords:[[32.828278,34.984329],[32.828323,34.984184],[32.828173,34.984043],[32.827792,34.985370],[32.827635,34.985950],[32.827552,34.986191],[32.827419,34.986532],[32.827295,34.986694],[32.827050,34.987064],[32.826547,34.987725],[32.826688,34.987825],[32.826728,34.987712],[32.826728,34.987669],[32.826864,34.987477],[32.827018,34.987272],[32.827152,34.987086],[32.827355,34.986859],[32.827390,34.986795],[32.827520,34.986513],[32.827629,34.986213],[32.827725,34.985888],[32.827845,34.985517],[32.827945,34.985213],[32.828073,34.984833],[32.828160,34.984561],[32.828220,34.984348]]}
+];
+const kmlGroup=L.layerGroup();
+KML_POLYS.forEach(p=>{
+  const poly=L.polygon(p.coords,{color:'#e6007e',weight:2,fillColor:'#e6007e',fillOpacity:0.18,dashArray:'6 4'});
+  poly.bindTooltip(p.name,{permanent:false,direction:'center',className:'kml-tip'});
+  kmlGroup.addLayer(poly);
+});
+kmlGroup.addTo(map);
+const style=document.createElement('style');
+style.textContent='.kml-tip{background:#e6007e;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-weight:700;font-size:12px}';
+document.head.appendChild(style);
+layerCtrl.addOverlay(kmlGroup,'🔷 פוליגונים KML');
 </script>
 </body>
 </html>
