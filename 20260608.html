@@ -69,7 +69,7 @@
     <span class="done-count" id="doneCount"></span>
     <input id="search" placeholder="חיפוש...">
     <button class="editbtn" id="editBtn" title="גרירת נקודות למיקום הנכון">✎ ערוך מיקומים</button>
-    <div class="toggles"><label><input type="checkbox" id="tgParc"> חלקות</label><label><input type="checkbox" id="tgHideDone"> הסתר שבוצעו</label></div>
+    <div class="toggles"><label><input type="checkbox" id="tgParc"> חלקות</label><label><input type="checkbox" id="tgKml" checked> גבולות KML</label><label><input type="checkbox" id="tgHideDone"> הסתר שבוצעו</label></div>
     <div class="legend">
       <span><i style="background:#0073ea"></i>כתובת</span>
       <span><i style="background:#00a854"></i>גוש/חלקה</span>
@@ -142,8 +142,23 @@ SITES.forEach(s=>{
 });
 if(bounds.length) map.fitBounds(bounds,{padding:[40,40]});
 
+/* ── KML polygon overlays ── */
+const KML_POLYS=[
+  {name:"סלמה",coords:[[32.897083060131365,35.365526203276794],[32.897082773891334,35.365748197978654],[32.89662927915358,35.36574737584433],[32.89662956538868,35.365525382273646]]},
+  {name:"דרך יפו - חיפה",coords:[[32.82827828591785,34.984328951418895],[32.82832297060726,34.984184471396134],[32.828173018285725,34.984042516056164],[32.827791720931195,34.98536959163916],[32.82763509107006,34.985949605634616],[32.82755199338311,34.98619114544502],[32.82741915699093,34.98653239103431],[32.827294855607846,34.98669363294113],[32.82705047763042,34.98706405327057],[32.82654727523996,34.98772457343639],[32.82668753916798,34.98782482844596],[32.82672848759278,34.987711948626114],[32.826728413272356,34.98766901889097],[32.826863608117954,34.987476500649684],[32.82701770490686,34.98727190252023],[32.82715163056058,34.98708640382806],[32.82735543833993,34.98685886175059],[32.8273897079137,34.986795109643374],[32.82751953537345,34.98651250173503],[32.82762860063306,34.98621269733733],[32.827724607718025,34.985887788458164],[32.82784535789736,34.98551712110976],[32.82794465199509,34.98521298267576],[32.8280728669104,34.984832653891544],[32.828160481574805,34.984561148122964],[32.82821958755158,34.98434821948878]]}
+];
+const kmlLayer=L.layerGroup().addTo(map);
+KML_POLYS.forEach(kp=>{
+  const poly=L.polygon(kp.coords,{color:'#e040fb',weight:2.5,fillColor:'#e040fb',fillOpacity:0.18,dashArray:'6 4'});
+  poly.bindPopup('<b>'+kp.name+'</b><br>📐 גבול אתר (KML)');
+  poly.addTo(kmlLayer);
+});
+
 document.getElementById('tgParc').addEventListener('change',e=>{
   if(e.target.checked){map.addLayer(parcLayer);}else{map.removeLayer(parcLayer);}
+});
+document.getElementById('tgKml').addEventListener('change',e=>{
+  if(e.target.checked){map.addLayer(kmlLayer);}else{map.removeLayer(kmlLayer);}
 });
 document.getElementById('tgHideDone').addEventListener('change',()=>render(document.getElementById('search').value));
 
