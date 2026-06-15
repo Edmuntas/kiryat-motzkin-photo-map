@@ -88,8 +88,9 @@ const wzq=(q)=>"https://waze.com/ul?q="+encodeURIComponent(q)+"&navigate=yes";
 const srcLabel={address:"כתובת מדויקת (GovMap)",parcel:"לפי גוש/חלקה",street:"מרכז רחוב",approx:"מקורב"};
 
 let DONE={},POS={};
-try{DONE=JSON.parse(localStorage.getItem('km_done')||'{}')||{};}catch(e){}
-try{POS=JSON.parse(localStorage.getItem('km_pos')||'{}')||{};}catch(e){}
+const NS='fieldmap20260616';
+try{DONE=JSON.parse(localStorage.getItem(NS+'_done')||'{}')||{};}catch(e){}
+try{POS=JSON.parse(localStorage.getItem(NS+'_pos')||'{}')||{};}catch(e){}
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const isDone=n=>!!DONE[n];
 const hasCustom=n=>Array.isArray(POS[n]);
@@ -131,7 +132,7 @@ SITES.forEach(s=>{
   const m=L.marker([p.lat,p.lon],{icon:makeIcon(s),draggable:false}).addTo(siteLayer);
   m.bindPopup(()=>popupHtml(s));
   m.on('click',()=>{if(!editMode)highlight(s.n);});
-  m.on('dragend',()=>{const ll=m.getLatLng();POS[s.n]=[+ll.lat.toFixed(6),+ll.lng.toFixed(6)];save('km_pos',POS);render(document.getElementById('search').value);});
+  m.on('dragend',()=>{const ll=m.getLatLng();POS[s.n]=[+ll.lat.toFixed(6),+ll.lng.toFixed(6)];save(NS+'_pos',POS);render(document.getElementById('search').value);});
   sMark[s.n]=m; bounds.push([p.lat,p.lon]);
   if(s.plat!=null&&s.plon!=null){
     const pIcon=L.divIcon({className:'',html:'<div class="pc-icon"></div>',iconSize:[16,16],iconAnchor:[8,8]});
@@ -152,10 +153,10 @@ document.getElementById('editBtn').addEventListener('click',()=>{
   document.getElementById('editbar').classList.toggle('on',editMode);
   SITES.forEach(s=>{const m=sMark[s.n];if(editMode)m.dragging.enable();else m.dragging.disable();m.setIcon(makeIcon(s));});
 });
-function resetPos(n){delete POS[n];save('km_pos',POS);const s=SITES.find(x=>x.n===n);sMark[n].setLatLng([s.blat,s.blon]);render(document.getElementById('search').value);}
+function resetPos(n){delete POS[n];save(NS+'_pos',POS);const s=SITES.find(x=>x.n===n);sMark[n].setLatLng([s.blat,s.blon]);render(document.getElementById('search').value);}
 window.resetPos=resetPos;
 
-function toggleDone(n,val){if(val)DONE[n]=true;else delete DONE[n];save('km_done',DONE);
+function toggleDone(n,val){if(val)DONE[n]=true;else delete DONE[n];save(NS+'_done',DONE);
   sMark[n].setIcon(makeIcon(SITES.find(x=>x.n===n)));render(document.getElementById('search').value);updateDoneCount();}
 window.toggleDone=toggleDone;
 function updateDoneCount(){document.getElementById('doneCount').textContent='בוצעו '+SITES.filter(s=>isDone(s.n)).length+'/'+SITES.length;}
